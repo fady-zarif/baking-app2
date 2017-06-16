@@ -4,6 +4,7 @@ package com.example.fady.bakingapp.Fragment;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.FragmentManager;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -13,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.fady.bakingapp.DetailsActivity;
@@ -54,6 +56,7 @@ import java.util.ArrayList;
  */
 public class RecipeDetailFragment extends android.app.Fragment {
     SimpleExoPlayerView exoPlayerView;
+    private LinearLayout.LayoutParams paramsNotFullscreen;
     Button previous, next;
     TextView shortDesc, longDesc;
     ArrayList<Step> steps;
@@ -77,10 +80,25 @@ public class RecipeDetailFragment extends android.app.Fragment {
 
 
     @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) //To fullscreen
+        {
+            exoPlayerView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT));
+
+        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            exoPlayerView.setLayoutParams(paramsNotFullscreen);
+        }
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View root = inflater.inflate(R.layout.fragment_recipe_detail, container, false);
+        setRetainInstance(true);
         exoPlayerView = (SimpleExoPlayerView) root.findViewById(R.id.myExoplayerView);
         stepImage = (ImageView) root.findViewById(R.id.stepImage);
         next = (Button) root.findViewById(R.id.nextStep);
@@ -93,9 +111,15 @@ public class RecipeDetailFragment extends android.app.Fragment {
         recipeDetailFragment = new RecipeDetailFragment();
         pos = bundle.getInt("Pos");
 
+        paramsNotFullscreen = (LinearLayout.LayoutParams) exoPlayerView.getLayoutParams();
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            exoPlayerView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT));
+        }
 
         url = steps.get(pos).getVideoURL();
-        if (url.equals("")) {
+
+        if (url.isEmpty()) {
             exoPlayerView.setVisibility(View.GONE);
             stepImage.setVisibility(View.VISIBLE);
             if (!steps.get(pos).getThumbnailURL().equals(""))
@@ -140,25 +164,26 @@ public class RecipeDetailFragment extends android.app.Fragment {
                 }
             }
         });
-        previous.setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View v) {
-                                            bundle2.putParcelableArrayList("RecipeStepArraylist", steps);
-                                            pos--;
-                                            bundle2.putInt("Pos", pos);
-                                            recipeDetailFragment.setArguments(bundle2);
-                                            if (DetailsActivity.istablet == true) {
-                                                getFragmentManager().beginTransaction().addToBackStack("a").replace(R.id.myframe2, recipeDetailFragment).commit();
-                                                RecipesActivity.FrNum++;
-                                            }else {
-                                                getFragmentManager().beginTransaction().addToBackStack("a").replace(R.id.myframe, recipeDetailFragment).commit();
-                                                RecipesActivity.FrNum++;
 
-                                            }
-                                        }
-                                    }
+
+        previous.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        bundle2.putParcelableArrayList("RecipeStepArraylist", steps);
+                        pos--;
+                        bundle2.putInt("Pos", pos);
+                        recipeDetailFragment.setArguments(bundle2);
+                        if (DetailsActivity.istablet == true) {
+                            getFragmentManager().beginTransaction().addToBackStack("a").replace(R.id.myframe2, recipeDetailFragment).commit();
+                            RecipesActivity.FrNum++;
+                        } else {
+                            getFragmentManager().beginTransaction().addToBackStack("a").replace(R.id.myframe, recipeDetailFragment).commit();
+                            RecipesActivity.FrNum++;
+                        }
+                    }
+                }
         );
-
 
         return root;
     }

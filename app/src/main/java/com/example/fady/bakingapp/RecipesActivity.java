@@ -1,6 +1,9 @@
 package com.example.fady.bakingapp;
 
 import android.app.Activity;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -21,6 +24,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.InetAddress;
 import java.util.ArrayList;
 
 public class RecipesActivity extends Activity {
@@ -42,7 +46,19 @@ public class RecipesActivity extends Activity {
         recipeRecyclerview.setLayoutManager(new LinearLayoutManager(this));
         recipeRecyclerview.setHasFixedSize(true);
         recipeRecyclerview.setAdapter(recipesAdapter);
-        retrieveJsonData(recipesAdapter);
+        boolean isavailable = isOnline();
+        if (isavailable) {
+            retrieveJsonData(recipesAdapter);
+        } else {
+            Toast.makeText(this, "No internet available", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public boolean isOnline() {
+        ConnectivityManager cm =
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnectedOrConnecting();
     }
 
     public void retrieveJsonData(final RecipesAdapter recipesAdapter) {

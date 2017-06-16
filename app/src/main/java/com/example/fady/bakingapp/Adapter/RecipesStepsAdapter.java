@@ -72,7 +72,7 @@ public class RecipesStepsAdapter extends RecyclerView.Adapter<RecipesStepsAdapte
                     IngredientsFragment fragment = new IngredientsFragment();
                     bundle.putParcelableArrayList("myRecipeIngredient", recipe.getIngredientArrayList());
                     fragment.setArguments(bundle);
-                    if (DetailsActivity.istablet == true) {
+                    if (DetailsActivity.istablet) {
                         manager.beginTransaction().addToBackStack(fragment.getClass().getName())
                                 .replace(R.id.myframe2, fragment).commit();
                     } else {
@@ -80,13 +80,12 @@ public class RecipesStepsAdapter extends RecyclerView.Adapter<RecipesStepsAdapte
                                 .replace(R.id.myframe, fragment).commit();
                     }
 
-
                 } else {
                     RecipeDetailFragment detailFragment = new RecipeDetailFragment();
                     bundle.putParcelableArrayList("RecipeStepArraylist", recipe.getStepArrayList());
                     bundle.putInt("Pos", position - 1);
                     detailFragment.setArguments(bundle);
-                    if (DetailsActivity.istablet == true) {
+                    if (DetailsActivity.istablet) {
                         manager.beginTransaction().addToBackStack("a")
                                 .replace(R.id.myframe2, detailFragment, "FragmentB").commit();
                         RecipesActivity.FrNum = 0;

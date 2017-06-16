@@ -3,7 +3,7 @@
     package="com.example.fady.bakingapp">
 
     <uses-permission android:name="android.permission.INTERNET" />
-
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <application
         android:allowBackup="true"
         android:icon="@mipmap/baking"
@@ -19,6 +19,7 @@
         </activity>
         <activity
             android:name=".DetailsActivity"
+            android:configChanges="screenLayout|screenSize|orientation"
             android:label="@string/title_activity_details" />
 
         <receiver android:name=".IngredientWidget">
